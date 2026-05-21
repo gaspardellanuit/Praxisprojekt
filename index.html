@@ -21,47 +21,30 @@
             overflow-x: hidden;
         }
 
-        /* Loading Screen with Live Progress */
-        #loader {
+        /* Fixed Background Image */
+        #background-image {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.8s ease;
-        }
-        .spinner-text {
-            font-size: 1rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        #progress-counter {
-            font-size: 0.85rem;
-            color: #888;
-        }
-
-        /* 3D Background - Fixed in place */
-        #canvas-container {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url('./xrayplant.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             z-index: 0;
-            pointer-events: auto; /* Allows mouse drag rotation */
         }
 
-        canvas {
-            display: block;
-            outline: none;
+        /* Subtle dark gradient overlay to make text pop */
+        #background-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, rgba(5,5,5,0.2) 0%, rgba(5,5,5,0.85) 100%);
+            z-index: 1;
+            pointer-events: none;
         }
 
         /* Scrollable Content Container */
         #scroll-content {
             position: relative;
             z-index: 10;
-            pointer-events: none; /* Lets clicks pass through to the 3D model */
         }
 
         /* Individual Scroll Sections */
@@ -75,20 +58,20 @@
 
         /* Glassmorphism Text Boxes */
         .text-box {
-            background: rgba(12, 12, 12, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(15, 15, 15, 0.4); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 50px;
             width: 100%;
-            max-width: 500px;
-            pointer-events: auto; /* Re-enables text selection inside the box */
+            max-width: 550px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
-        /* Aligning sections dynamically */
-        #manifesto .text-box { margin-left: auto; } /* Pushes text to the right */
-        #research .text-box { margin: 0 auto; text-align: center; } /* Centers text */
+        /* Aligning sections dynamically for visual rhythm */
+        #manifesto .text-box { margin-left: auto; }
+        #research .text-box { margin: 0 auto; text-align: center; }
 
         h1 {
             font-size: 2.5rem;
@@ -101,35 +84,22 @@
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: #888;
+            color: #aaaaaa;
             margin-bottom: 10px;
         }
 
         p {
             font-size: 1.05rem;
             line-height: 1.8;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.85);
             margin: 0;
         }
     </style>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner-text">Umgebung wird geladen</div>
-        <div id="progress-counter">0 MB</div>
-    </div>
-
-    <div id="canvas-container"></div>
+    <div id="background-image"></div>
+    <div id="background-overlay"></div>
 
     <main id="scroll-content">
         
@@ -137,7 +107,7 @@
             <div class="text-box">
                 <h2>Projekt</h2>
                 <h1>Das Wurzelsystem</h1>
-                <p>Eine interaktive, digitale Ausstellungsfläche. Scrollen Sie nach unten, um die Inhalte zu entdecken, oder ziehen Sie das 3D-Modell mit der Maus, um es frei im Raum zu bewegen.</p>
+                <p>Eine digitale Ausstellungsfläche. Scrollen Sie nach unten, um unsere Konzepte, kuratorischen Ansätze und Forschungsergebnisse zu entdecken.</p>
             </div>
         </section>
 
@@ -153,7 +123,7 @@
             <div class="text-box">
                 <h2>Über die Kuration</h2>
                 <h1>Madame Grès & die Antike</h1>
-                <p>Dieses Projekt erforscht neue Wege der digitalen Wissensvermittlung. Speziell entwickelt für die Madame Grès Ausstellung im Kunstgewerbemuseum Berlin, dient diese Station als interaktiver "Action Bound", um die Antiquitäten-Sektion räumlich greifbar zu machen.</p>
+                <p>Dieses Projekt erforscht neue Wege der digitalen Wissensvermittlung. Speziell entwickelt für die Madame Grès Ausstellung im Kunstgewerbemuseum Berlin, dient diese Station als Begleitung, um die Antiquitäten-Sektion greifbar zu machen.</p>
             </div>
         </section>
 
@@ -161,118 +131,11 @@
             <div class="text-box">
                 <h2>Forschung & Partner</h2>
                 <h1>Digitale Vermittlungsmethoden</h1>
-                <p>Begleitende Untersuchungen zu interaktiven Ausstellungsguides. Unterstützt durch Netzwerke, die experimentelle und barrierefreie Zugänge zu Museumssammlungen fördern.</p>
+                <p>Begleitende Untersuchungen zu Ausstellungsguides. Unterstützt durch Netzwerke, die experimentelle und barrierefreie Zugänge zu Museumssammlungen fördern.</p>
             </div>
         </section>
 
     </main>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-        // 1. Scene Setup
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x050505, 0.03); // Fades model slightly into background
-        
-        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 5);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        // 2. Lighting
-        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
-        dirLight.position.set(5, 10, 7);
-        scene.add(dirLight);
-
-        // 3. Controls
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = false; // Disable zoom so it doesn't conflict with page scrolling
-
-        // 4. Load 3D Model
-        const loader = new GLTFLoader();
-        let loadedModel = null;
-        
-        // Critical: The exact file name. Use './' to explicitly look in the same folder.
-        const fileName = 'https://github.com/gaspardellanuit/Praxisprojekt/blob/f8890e6dd7f66cb6276df324d7060303b09d0c0b/root-system.glb';
-
-        loader.load(
-            fileName, 
-            (gltf) => {
-                // Success Callback
-                loadedModel = gltf.scene;
-                
-                // Auto-Center Model
-                const box = new THREE.Box3().setFromObject(loadedModel);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                
-                loadedModel.position.sub(center); 
-                scene.add(loadedModel);
-
-                // Auto-Distance Camera based on Object Size
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const fov = camera.fov * (Math.PI / 180);
-                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-                camera.position.z = cameraZ * 1.6; 
-                
-                // Fade out loader
-                const loaderEl = document.getElementById('loader');
-                loaderEl.style.opacity = '0';
-                setTimeout(() => loaderEl.style.display = 'none', 800);
-            }, 
-            (xhr) => {
-                // Progress Callback (Counts Megabytes downloaded)
-                const mbLoaded = (xhr.loaded / (1024 * 1024)).toFixed(2);
-                let progressText = `${mbLoaded} MB`;
-                
-                if (xhr.lengthComputable) {
-                    const percentComplete = (xhr.loaded / xhr.total) * 100;
-                    progressText = `${Math.round(percentComplete)}%`;
-                }
-                
-                document.getElementById('progress-counter').innerText = progressText;
-            }, 
-            (error) => {
-                // Error Callback
-                console.error('Error:', error);
-                document.getElementById('progress-counter').innerText = 'Datei "root-system.glb" wurde im Ordner nicht gefunden.';
-                document.getElementById('progress-counter').style.color = '#ff5555';
-            }
-        );
-
-        // 5. Scroll Interaction Logic
-        // As the user scrolls down, the 3D model rotates automatically.
-        window.addEventListener('scroll', () => {
-            if (loadedModel) {
-                // Adjust 0.001 to make the scroll rotation faster or slower
-                loadedModel.rotation.y = window.scrollY * 0.002;
-                loadedModel.rotation.x = window.scrollY * 0.0005;
-            }
-        });
-
-        // 6. Animation Loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // 7. Responsive Resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
 </body>
 </html>
