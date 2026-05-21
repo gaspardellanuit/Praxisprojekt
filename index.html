@@ -6,27 +6,50 @@
     <title>Wurzelsystem | Digitale Kuration</title>
     
     <style>
-        /* Modern, Sleek Reset */
+        /* Modern Reset */
         :root {
             --bg-color: #050505;
             --text-main: #ffffff;
-            --accent: #555555;
         }
 
         body, html {
             margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            overflow: hidden;
+            width: 100%;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
+            overflow-x: hidden;
         }
 
-        /* 3D Canvas Background */
+        /* Loading Screen with Live Progress */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+        .spinner-text {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        #progress-counter {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* 3D Background - Fixed in place */
         #canvas-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: auto; /* Allows mouse drag rotation */
         }
 
         canvas {
@@ -34,94 +57,59 @@
             outline: none;
         }
 
-        /* Error Message */
-        #error-msg {
-            position: absolute;
-            bottom: 20px; right: 20px;
-            color: #ff5555;
-            font-size: 0.8rem;
-            z-index: 100;
-            display: none;
-            background: rgba(0,0,0,0.8);
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        /* Minimalist Navigation */
-        nav {
-            position: absolute;
-            top: 30px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 15px 40px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            gap: 30px;
-        }
-        
-        nav a {
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        nav a:hover, nav a.active {
-            color: #ffffff;
-        }
-
-        /* Sub-Websites (Panels) */
-        #content-layer {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+        /* Scrollable Content Container */
+        #scroll-content {
+            position: relative;
             z-index: 10;
-            pointer-events: none; /* Klicks gehen durch zu 3D */
+            pointer-events: none; /* Lets clicks pass through to the 3D model */
+        }
+
+        /* Individual Scroll Sections */
+        section {
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            padding-left: 8%;
+            padding: 0 10%;
+            box-sizing: border-box;
         }
 
-        .panel {
-            background: rgba(15, 15, 15, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 40px;
+        /* Glassmorphism Text Boxes */
+        .text-box {
+            background: rgba(12, 12, 12, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 50px;
             width: 100%;
-            max-width: 400px;
-            opacity: 0;
-            transform: translateX(-30px);
-            transition: all 0.5s ease;
-            position: absolute;
-            pointer-events: auto; /* Klicks im Panel erlauben */
-            visibility: hidden;
+            max-width: 500px;
+            pointer-events: auto; /* Re-enables text selection inside the box */
         }
 
-        .panel.active {
-            opacity: 1;
-            transform: translateX(0);
-            visibility: visible;
-        }
+        /* Aligning sections dynamically */
+        #manifesto .text-box { margin-left: auto; } /* Pushes text to the right */
+        #research .text-box { margin: 0 auto; text-align: center; } /* Centers text */
 
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 300;
-            margin: 0 0 15px 0;
-            letter-spacing: -0.5px;
+            margin: 0 0 20px 0;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #888;
+            margin-bottom: 10px;
         }
 
         p {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
         }
     </style>
 
@@ -136,124 +124,142 @@
 </head>
 <body>
 
+    <div id="loader">
+        <div class="spinner-text">Umgebung wird geladen</div>
+        <div id="progress-counter">0 MB</div>
+    </div>
+
     <div id="canvas-container"></div>
-    <div id="error-msg">3D-Modell konnte nicht geladen werden. Bitte Dateinamen prüfen.</div>
 
-    <nav>
-        <a data-target="about" class="active">Projekt</a>
-        <a data-target="moodboard">Moodboard</a>
-        <a data-target="manifesto">Manifest</a>
-        <a data-target="research">Forschung</a>
-        <a data-target="partners">Partner</a>
-    </nav>
+    <main id="scroll-content">
+        
+        <section id="hero">
+            <div class="text-box">
+                <h2>Projekt</h2>
+                <h1>Das Wurzelsystem</h1>
+                <p>Eine interaktive, digitale Ausstellungsfläche. Scrollen Sie nach unten, um die Inhalte zu entdecken, oder ziehen Sie das 3D-Modell mit der Maus, um es frei im Raum zu bewegen.</p>
+            </div>
+        </section>
 
-    <main id="content-layer">
-        <section id="about" class="panel active">
-            <h1>Das Wurzelsystem</h1>
-            <p>Interaktive, digitale Ausstellungsfläche. Bewegen Sie das Objekt im Hintergrund mit der Maus frei im Raum, um die komplexe Struktur im Detail zu studieren.</p>
+        <section id="manifesto">
+            <div class="text-box">
+                <h2>Manifest</h2>
+                <h1>Offene Strukturen</h1>
+                <p>Unsere Arbeitsprozesse basieren auf den Prinzipien der Open-Source-Entwicklung. Wir priorisieren gemeinschaftliche Zusammenarbeit, absolute Transparenz und das Teilen von Wissen. Dieser digitale Raum ist ein Beweis dafür, dass kuratorische Arbeit zugänglich und reproduzierbar sein sollte.</p>
+            </div>
         </section>
         
-        <section id="moodboard" class="panel">
-            <h1>Moodboard</h1>
-            <p>Visuelle Referenzen, Texturen und räumliche Konzepte. Die Ästhetik verbindet organische Formen mit digitaler Präzision.</p>
+        <section id="about">
+            <div class="text-box">
+                <h2>Über die Kuration</h2>
+                <h1>Madame Grès & die Antike</h1>
+                <p>Dieses Projekt erforscht neue Wege der digitalen Wissensvermittlung. Speziell entwickelt für die Madame Grès Ausstellung im Kunstgewerbemuseum Berlin, dient diese Station als interaktiver "Action Bound", um die Antiquitäten-Sektion räumlich greifbar zu machen.</p>
+            </div>
         </section>
 
-        <section id="manifesto" class="panel">
-            <h1>Manifest</h1>
-            <p>Offene Entwicklung, transparente Prozesse und gemeinschaftliche Zusammenarbeit. Digitale Räume müssen für alle modifizierbar sein.</p>
+        <section id="research">
+            <div class="text-box">
+                <h2>Forschung & Partner</h2>
+                <h1>Digitale Vermittlungsmethoden</h1>
+                <p>Begleitende Untersuchungen zu interaktiven Ausstellungsguides. Unterstützt durch Netzwerke, die experimentelle und barrierefreie Zugänge zu Museumssammlungen fördern.</p>
+            </div>
         </section>
 
-        <section id="research" class="panel">
-            <h1>Forschung</h1>
-            <p>Untersuchungen zu digitalen Vermittlungsansätzen und der Kuration von 3D-Objekten im virtuellen Raum.</p>
-        </section>
-
-        <section id="partners" class="panel">
-            <h1>Partner</h1>
-            <p>Institutionen, Museen und Netzwerke, die diesen offenen und experimentellen Ansatz unterstützen.</p>
-        </section>
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('nav a');
-            const panels = document.querySelectorAll('.panel');
-
-            links.forEach(link => {
-                link.addEventListener('click', () => {
-                    // Remove active from all
-                    links.forEach(l => l.classList.remove('active'));
-                    panels.forEach(p => p.classList.remove('active'));
-                    
-                    // Add active to clicked
-                    link.classList.add('active');
-                    const targetId = link.getAttribute('data-target');
-                    document.getElementById(targetId).classList.add('active');
-                });
-            });
-        });
-    </script>
 
     <script type="module">
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+        // 1. Scene Setup
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050505, 0.03); // Fades model slightly into background
         
-        // Setup Camera
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 5);
 
-        // Setup Renderer
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        // Lights
+        // 2. Lighting
         scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 2);
-        dirLight.position.set(5, 10, 5);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
+        dirLight.position.set(5, 10, 7);
         scene.add(dirLight);
 
-        // Controls
+        // 3. Controls
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.8;
+        controls.enableZoom = false; // Disable zoom so it doesn't conflict with page scrolling
 
-        // Load 3D Model
+        // 4. Load 3D Model
         const loader = new GLTFLoader();
+        let loadedModel = null;
         
-        // HIER IST DIE ÄNDERUNG:
-        const fileName = 'root-system.glb';
+        // Critical: The exact file name. Use './' to explicitly look in the same folder.
+        const fileName = './root-system.glb';
 
-        loader.load(fileName, (gltf) => {
-            const model = gltf.scene;
-            
-            // Auto-Center and Auto-Scale camera to fit the specific model
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            
-            model.position.sub(center); // Center perfectly
-            scene.add(model);
+        loader.load(
+            fileName, 
+            (gltf) => {
+                // Success Callback
+                loadedModel = gltf.scene;
+                
+                // Auto-Center Model
+                const box = new THREE.Box3().setFromObject(loadedModel);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                
+                loadedModel.position.sub(center); 
+                scene.add(loadedModel);
 
-            // Calculate perfect camera distance based on object size
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const fov = camera.fov * (Math.PI / 180);
-            let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-            camera.position.z = cameraZ * 1.8; // Give it some breathing room
-            
-        }, undefined, (error) => {
-            console.error('Error:', error);
-            document.getElementById('error-msg').style.display = 'block';
+                // Auto-Distance Camera based on Object Size
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+                camera.position.z = cameraZ * 1.6; 
+                
+                // Fade out loader
+                const loaderEl = document.getElementById('loader');
+                loaderEl.style.opacity = '0';
+                setTimeout(() => loaderEl.style.display = 'none', 800);
+            }, 
+            (xhr) => {
+                // Progress Callback (Counts Megabytes downloaded)
+                const mbLoaded = (xhr.loaded / (1024 * 1024)).toFixed(2);
+                let progressText = `${mbLoaded} MB`;
+                
+                if (xhr.lengthComputable) {
+                    const percentComplete = (xhr.loaded / xhr.total) * 100;
+                    progressText = `${Math.round(percentComplete)}%`;
+                }
+                
+                document.getElementById('progress-counter').innerText = progressText;
+            }, 
+            (error) => {
+                // Error Callback
+                console.error('Error:', error);
+                document.getElementById('progress-counter').innerText = 'Datei "root-system.glb" wurde im Ordner nicht gefunden.';
+                document.getElementById('progress-counter').style.color = '#ff5555';
+            }
+        );
+
+        // 5. Scroll Interaction Logic
+        // As the user scrolls down, the 3D model rotates automatically.
+        window.addEventListener('scroll', () => {
+            if (loadedModel) {
+                // Adjust 0.001 to make the scroll rotation faster or slower
+                loadedModel.rotation.y = window.scrollY * 0.002;
+                loadedModel.rotation.x = window.scrollY * 0.0005;
+            }
         });
 
-        // Animation Loop
+        // 6. Animation Loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
@@ -261,7 +267,7 @@
         }
         animate();
 
-        // Responsive Resize
+        // 7. Responsive Resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
