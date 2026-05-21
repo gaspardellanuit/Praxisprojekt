@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wurzelsystem - Interaktive Plattform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <nav>
+        <div class="logo">Wurzelsystem</div>
+        <ul id="nav-links">
+            <li><a href="#" data-target="about">Über uns</a></li>
+            <li><a href="#" data-target="moodboard">Moodboard</a></li>
+            <li><a href="#" data-target="manifesto">Manifest</a></li>
+            <li><a href="#" data-target="partners">Partner</a></li>
+            <li><a href="#" data-target="research">Forschung</a></li>
+        </ul>
+    </nav>
+
+    <main id="content-container">
+        <section id="about" class="content-section active">
+            <h2>Über uns</h2>
+            <p>Willkommen bei unserer interaktiven Erkundung. Bewegen Sie das 3D-Modell im Hintergrund, um die Struktur aus allen Winkeln zu betrachten.</p>
+        </section>
+        
+        <section id="moodboard" class="content-section">
+            <h2>Moodboard</h2>
+            <p>Visuelle Inspirationen, Materialien und Konzepte, die unsere Arbeit leiten.</p>
+        </section>
+
+        <section id="manifesto" class="content-section">
+            <h2>Manifest</h2>
+            <p>Unsere Grundsätze für offene Zusammenarbeit, Transparenz und gemeinschaftliches Schaffen.</p>
+        </section>
+
+        <section id="partners" class="content-section">
+            <h2>Partner</h2>
+            <p>Netzwerke und Institutionen, die dieses Projekt unterstützen.</p>
+        </section>
+
+        <section id="research" class="content-section">
+            <h2>Forschung</h2>
+            <p>Aktuelle Studien, kuratorische Ansätze und digitale Vermittlungsmethoden.</p>
+        </section>
+    </main>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
