@@ -110,15 +110,17 @@
 </head>
 <body>
 
-    <model-viewer 
-        src="./root-system.glb" 
-        alt="3D Scan des Wurzelsystems" 
+   <model-viewer 
+        src="https://gaspardellanuit.github.io/Praxisprojekt/root-system.glb" 
+        alt="Fehler: Modell konnte nicht geladen werden" 
         camera-controls 
         auto-rotate 
         rotation-per-second="5deg"
-        shadow-intensity="1.5" 
-        exposure="1.2"
-        environment-image="neutral">
+        shadow-intensity="1" 
+        exposure="1.5"
+        environment-image="neutral"
+        camera-orbit="0deg 75deg 100%"
+        style="background-color: #1a1a1a;">
     </model-viewer>
 
     <div id="background-overlay"></div>
